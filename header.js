@@ -146,7 +146,7 @@ headerTemplate.innerHTML = `
 		<li>
 		<a href="#">Permainan</a>
 		<ul>
-			<li><a href="002-suai-index.html">Suai Gambar</a></li>
+			<li><a href="index.html">Suai Gambar</a></li>
 		</ul>
 		</li>
 
