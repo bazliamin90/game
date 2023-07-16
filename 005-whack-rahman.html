@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ketuk-ketuk</title>
+</head>
+<style>
+body {
+	margin: 0;
+	padding: 0;
+    background-color: #CC9BE0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: black;
+}
+
+.game-area {
+    display: grid;
+    width: 300px;
+    height: 300px;
+    border: 2px solid #fff;
+    border-radius: 5px;
+    overflow: hidden;
+    gap: 1.5px;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.hole {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #2a538b;
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="54" height="54"><text x="0" y="38" font-size="40">🔨</text></svg>'), auto;
+    height: 100%;
+    width: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+.bearEmoji {
+  position: relative;
+}
+
+.bearEmoji::before {
+  content: url('rahman.png');
+  font-size: 2rem; /* Adjust the size as needed */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#score {
+    font-size: 1.2rem;
+    margin: 10px 0;
+}
+
+#game-over{
+  display: none;
+  margin-top: 5px;
+  font-size: 1.5rem;
+}
+
+.startBtn{
+  margin-top: 5px;
+}
+
+.glow-on-hover {
+    width: 220px;
+    height: 50px;
+    border: none;
+    outline: none;
+    color: #fff;
+    background: #111;
+    cursor: pointer;
+    position: relative;
+    z-index: 0;
+    border-radius: 10px;
+}
+
+.glow-on-hover:before {
+    content: '';
+    background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+    position: absolute;
+    top: -2px;
+    left:-2px;
+    background-size: 400%;
+    z-index: -1;
+    filter: blur(5px);
+    width: calc(100% + 4px);
+    height: calc(100% + 4px);
+    animation: glowing 20s linear infinite;
+    opacity: 0;
+    transition: opacity .3s ease-in-out;
+    border-radius: 10px;
+}
+
+.glow-on-hover:active {
+    color: #000
+}
+
+.glow-on-hover:active:after {
+    background: transparent;
+}
+
+.glow-on-hover:hover:before {
+    opacity: 1;
+}
+
+.glow-on-hover:after {
+    z-index: -1;
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #111;
+    left: 0;
+    top: 0;
+    border-radius: 10px;
+}
+
+@keyframes glowing {
+    0% { background-position: 0 0; }
+    50% { background-position: 400% 0; }
+    100% { background-position: 0 0; }
+}
+</style>
+<body>
+<header-component></header-component>
+    <h2>Ketuk-ketuk</h2>
+	<select onchange="handleSelection(this)">
+  <option value="002" onclick="window.location.href='005-whack-rahman.html'">Abdurrahman</option>
+  <option value="001" onclick="window.location.href='005-whack.html'">Dahlia</option>
+  <option value="003" onclick="window.location.href='005-whack-umar.html'">Umar</option>
+</select>
+	<br>
+    <div class="game-area">
+        <div class="hole" onclick="whack(event)" id="hole1"></div>
+        <div class="hole" onclick="whack(event)" id="hole2"></div>
+        <div class="hole" onclick="whack(event)" id="hole3"></div>
+        <div class="hole" onclick="whack(event)" id="hole4"></div>
+        <div class="hole" onclick="whack(event)" id="hole5"></div>
+        <div class="hole" onclick="whack(event)" id="hole6"></div>
+        <div class="hole" onclick="whack(event)" id="hole7"></div>
+        <div class="hole" onclick="whack(event)" id="hole8"></div>
+        <div class="hole" onclick="whack(event)" id="hole9"></div>
+    </div>
+    <div id="score">Markah: 0</div>
+    <div id="countdown"></div>
+    <div id="game-over">Game Over!</div>
+    <button class="startBtn glow-on-hover" onclick="startGame()">Mula</button>
+<script>
+const gameAreaEl = document.getElementById("game-area");
+const scoreEl = document.getElementById("score");
+const countdownEl = document.getElementById("countdown");
+const gameOverEl = document.getElementById("game-over");
+const startBtnEl = document.querySelector(".startBtn");
+const holes = [...document.getElementsByClassName('hole')];
+
+let gameDuration = 20 //seconds
+let score = 0;
+let miss = 0;
+const maximumMissThreshold = 3;
+let gameRunning = false;
+let countdownInterval = null;
+let missTimerInterval = null;
+
+// function initialize the game
+function startGame() {
+    initializeGameTimer();
+    gameRunning = true;
+    startBtnEl.style.display = "none";
+    gameOverEl.style.display = "none";
+    peekBearInterval = setInterval(peekBear, getPeekInterval())
+}
+
+// function to initialize the game timer
+function initializeGameTimer() {
+    countdownInterval = setInterval(() => {
+        countdownEl.style.display = "block";
+        countdownEl.textContent = `Game akan tamat dalam ${gameDuration} saat, atau lepas 3 kali tersilap.`;
+        gameDuration--;
+        if(gameDuration == 0){
+            endGame();
+            return;
+        }
+    }, 1000);
+}
+
+// function to get peek interval game logic
+function getPeekInterval() {
+    if (score >= 0 && score <= 10) {
+        return 1100;
+    } else if (score >= 11 && score <= 20) {
+        return 1000;
+    } else {
+        return 900;
+    }
+}
+
+// function for showing bear at certain intervals
+function peekBear() {
+    if (gameRunning) {
+        if(miss === maximumMissThreshold){
+            endGame();
+            return;
+        }
+        const randomIndex = Math.floor(Math.random() * holes.length);
+        const hole = holes[randomIndex];
+        hole.classList.add("bearEmoji")
+        setTimeout(() => {
+            hole.classList.remove("bearEmoji");
+        }, 500);
+        missTimerInterval = setTimeout(() => {
+            miss++;
+        }, 500)
+    }
+}
+
+// function to clear the game variables and end
+function endGame(){
+    clearInterval(countdownInterval);
+    clearInterval(peekBearInterval);
+    countdownEl.style.display = "none";
+    countdownEl.textContent = `Game akan tamat dalam ${gameDuration} saat, atau lepas 3 kali tersilap.`;
+    gameOverEl.style.display = "block";
+    gameOverEl.textContent = `Game Over! Markah: ${score}.`
+    gameDuration = 20;
+    score = 0;
+    miss = 0;
+    startBtnEl.style.display = "block";
+}
+
+// function for whack event
+function whack(event){
+    if(gameRunning){
+        clearInterval(missTimerInterval);
+        const holeEl = event.target;
+        if(holeEl.classList.contains("bearEmoji")){
+            score++;
+            scoreEl.textContent = `Markah: ${score}`
+        }else{
+            miss++;
+        }
+    }
+}
+function handleSelection(selectElement) {
+    var selectedValue = selectElement.value;
+    if (selectedValue === '001') {
+      window.location.href = '005-whack.html';
+    }
+	if (selectedValue === '002') {
+      window.location.href = '005-whack-rahman.html';
+    }
+	if (selectedValue === '003') {
+      window.location.href = '005-whack-umar.html';
+    }
+  }
+</script>
+<script src="header.js" type="text/javascript" defer></script>
+</body>
+</html>
