@@ -146,16 +146,18 @@ headerTemplate.innerHTML = `
 		<li>
 		<a href="#">Permainan</a>
 		<ul>
-			<li><a href="index.html">Suai Gambar</a></li>
+			<li><a href="002-suai-index.html">Suai Gambar</a></li>
+			<li><a href="005-whack.html">Ketuk-ketuk</a></li>
 		</ul>
 		</li>
 
 	</ul>
   </header>
 
-	<img class="link" src="https://img.icons8.com/color/48/facebook.png" onclick="window.open('https://www.facebook.com/baz.li.3', '_blank')">
-	<img class="link2" src="https://img.icons8.com/color/48/whatsapp--v1.png" onclick="window.open('https://wa.me/601165402468', '_blank')">
 `;
+
+// <img class="link" src="https://img.icons8.com/color/48/facebook.png" onclick="window.open('https://www.facebook.com/baz.li.3', '_blank')">
+//	<img class="link2" src="https://img.icons8.com/color/48/whatsapp--v1.png" onclick="window.open('https://wa.me/601165402468', '_blank')">
 
 // Get the button
 let mybutton = document.getElementById("myBtn");
