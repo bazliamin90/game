@@ -58,7 +58,7 @@ body {
 }
 .stats-container {
   text-align: right;
-  margin-bottom: 1.2em;
+  margin-bottom: 0.8em;
 }
 .stats-container span {
   font-weight: 600;
@@ -155,9 +155,20 @@ button {
   box-shadow: 0 0.9em 2.8em rgba(86, 66, 0, 0.2);
 	}
 	.game-container{
-		scale: 0.8;
+		scale: 0.7;
 	}
 	.stats-container{
 		scale: 0.7;
+	}
+	#stop {
+		font-size: 0.7em;
+		display: block;
+		margin: 0.1em auto 0 auto;
+		background-color: #000000;
+		color: #ffffff;
+	}
+	.stats-container {
+		text-align: right;
+		margin-bottom: 0.2em;
 	}
 }
